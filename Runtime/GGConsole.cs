@@ -254,7 +254,11 @@ namespace GGConsolePackage
             {
                 _ownedEventSystem = new GameObject("EventSystem (GGConsole)");
                 _ownedEventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
+#if ENABLE_INPUT_SYSTEM
                 _ownedEventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+#else
+                _ownedEventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+#endif
                 DontDestroyOnLoad(_ownedEventSystem);
             }
         }
