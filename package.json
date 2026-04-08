@@ -1,0 +1,16 @@
+{
+  "name": "com.mob.ggconsole",
+  "displayName": "GGConsole - In-game Debug Console",
+  "description": "Runtime debug console with log filter, search, object pooling, copy clipboard, resize, draggable toolbar",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "author": {
+    "name": "Mob"
+  },
+  "keywords": [
+    "debug",
+    "console",
+    "log",
+    "runtime"
+  ]
+}
