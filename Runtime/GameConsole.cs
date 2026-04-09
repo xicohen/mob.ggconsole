@@ -7,12 +7,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace GGConsolePackage
+namespace Mob404.Console
 {
     /// <summary>
     /// In-game debug console - hien thi Unity log runtime tren man hinh
     /// </summary>
-    public sealed class GGConsole : MonoBehaviour
+    public sealed class GameConsole : MonoBehaviour
     {
         [SerializeField] private Canvas? canvasConsole;
         [SerializeField] private ScrollRect? scrollRect;
@@ -28,15 +28,15 @@ namespace GGConsolePackage
         [SerializeField] private GameObject? buttonUp;
         [SerializeField] private GameObject? buttonDown;
 
-        private const int MAX_ENTRIES = 500;
-        private const int TRIM_COUNT = 100;
+        private const int MaxEntries = 500;
+        private const int TrimCount = 100;
 
-        private static readonly float[] SIZE_RATIOS = { 1f, 0.5f, 0.33f };
-        private static readonly string[] SIZE_LABELS = { "Full", "1/2", "1/3" };
+        private static readonly float[] SizeRatios = { 1f, 0.5f, 0.33f };
+        private static readonly string[] SizeLabels = { "Full", "1/2", "1/3" };
 
         private GameObject? _ownedEventSystem;
-        private GGLogPool? _pool;
-        private readonly List<GGLogEntry> _allEntries = new();
+        private LogPool? _pool;
+        private readonly List<LogEntry> _allEntries = new();
         private bool _recordLogOn = true;
         private bool _filterLog = true;
         private bool _filterError = true;
@@ -50,7 +50,7 @@ namespace GGConsolePackage
             EnsureEventSystem();
             SceneManager.sceneLoaded += OnSceneLoaded;
             
-            _pool = new GGLogPool(prefabTextLog!, textLogContainer!, poolParent!);
+            _pool = new LogPool(prefabTextLog!, textLogContainer!, poolParent!);
             _pool.Prewarm();
 
             // Dong bo state tu Toggle prefab
@@ -74,21 +74,21 @@ namespace GGConsolePackage
 
         public static void ShowScreenConsole()
         {
-            var existing = FindAnyObjectByType<GGConsole>();
+            var existing = FindAnyObjectByType<GameConsole>();
             if (existing != null) return;
 
-            var prefab = Resources.Load<GameObject>("GGConsole");
+            var prefab = Resources.Load<GameObject>("Mob404Console/GameConsole");
             if (prefab == null)
-                throw new InvalidOperationException("GGConsole prefab not found in Resources");
+                throw new InvalidOperationException("GameConsole prefab not found in Resources");
 
             var goConsole = Instantiate(prefab);
-            goConsole.name = "GGConsole";
+            goConsole.name = "GameConsole";
             DontDestroyOnLoad(goConsole);
         }
 
         public static void CloseScreenConsole()
         {
-            var existing = FindAnyObjectByType<GGConsole>();
+            var existing = FindAnyObjectByType<GameConsole>();
             if (existing != null) Destroy(existing.gameObject);
         }
 
@@ -147,7 +147,7 @@ namespace GGConsolePackage
 
         public void ButtonResizeClick()
         {
-            _sizeMode = (_sizeMode + 1) % SIZE_RATIOS.Length;
+            _sizeMode = (_sizeMode + 1) % SizeRatios.Length;
             ApplyResize();
         }
 
@@ -179,12 +179,12 @@ namespace GGConsolePackage
             if (type != LogType.Log && type != LogType.Warning
                 && type != LogType.Error && type != LogType.Exception) return;
 
-            var entry = new GGLogEntry(logString, stackTrace, type, _entryIndex++);
+            var entry = new LogEntry(logString, stackTrace, type, _entryIndex++);
             _allEntries.Add(entry);
 
-            if (_allEntries.Count > MAX_ENTRIES)
+            if (_allEntries.Count > MaxEntries)
             {
-                _allEntries.RemoveRange(0, TRIM_COUNT);
+                _allEntries.RemoveRange(0, TrimCount);
                 RebuildVisibleCells();
                 return;
             }
@@ -212,7 +212,7 @@ namespace GGConsolePackage
             StartCoroutine(DelayMoveToBottom());
         }
 
-        private bool PassesFilter(GGLogEntry entry)
+        private bool PassesFilter(LogEntry entry)
         {
             var typePass = entry.LogType switch
             {
@@ -252,7 +252,7 @@ namespace GGConsolePackage
             // Chua co EventSystem nao, tao moi va giu DontDestroyOnLoad
             if (_ownedEventSystem == null)
             {
-                _ownedEventSystem = new GameObject("EventSystem (GGConsole)");
+                _ownedEventSystem = new GameObject("EventSystem (GameConsole)");
                 _ownedEventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
 #if ENABLE_INPUT_SYSTEM
                 _ownedEventSystem.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
@@ -272,7 +272,7 @@ namespace GGConsolePackage
         {
             if (consoleRect == null) return;
 
-            var ratio = SIZE_RATIOS[_sizeMode];
+            var ratio = SizeRatios[_sizeMode];
 
             if (_anchorTop)
             {
@@ -289,7 +289,7 @@ namespace GGConsolePackage
             consoleRect.offsetMax = Vector2.zero;
 
             if (textResize != null)
-                textResize.text = SIZE_LABELS[_sizeMode];
+                textResize.text = SizeLabels[_sizeMode];
 
             var isFullScreen = _sizeMode == 0;
             if (buttonUp != null)

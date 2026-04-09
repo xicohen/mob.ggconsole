@@ -3,27 +3,27 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GGConsolePackage
+namespace Mob404.Console
 {
     /// <summary>
     /// Component tren moi cell log trong console
     /// </summary>
-    public sealed class GGLogCell : MonoBehaviour
+    public sealed class LogCell : MonoBehaviour
     {
         [SerializeField] private Text? textContent;
 
-        private static readonly Color COLOR_LOG = Color.white;
-        private static readonly Color COLOR_WARNING = new Color(1f, 0.92f, 0.016f);
-        private static readonly Color COLOR_ERROR = Color.red;
+        private static readonly Color LogColor = Color.white;
+        private static readonly Color WarningColor = new Color(1f, 0.92f, 0.016f);
+        private static readonly Color ErrorColor = Color.red;
 
-        private GGLogEntry? _entry;
+        private LogEntry? _entry;
 
-        public GGLogEntry? Entry => _entry;
+        public LogEntry? Entry => _entry;
 
         /// <summary>
         /// Gan data vao cell, set mau theo LogType
         /// </summary>
-        public void Bind(GGLogEntry entry)
+        public void Bind(LogEntry entry)
         {
             _entry = entry;
 
@@ -35,10 +35,10 @@ namespace GGConsolePackage
 
                 textContent.color = entry.LogType switch
                 {
-                    LogType.Warning => COLOR_WARNING,
-                    LogType.Error => COLOR_ERROR,
-                    LogType.Exception => COLOR_ERROR,
-                    _ => COLOR_LOG
+                    LogType.Warning => WarningColor,
+                    LogType.Error => ErrorColor,
+                    LogType.Exception => ErrorColor,
+                    _ => LogColor
                 };
             }
 

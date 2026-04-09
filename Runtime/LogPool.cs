@@ -3,26 +3,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GGConsolePackage
+namespace Mob404.Console
 {
     /// <summary>
     /// Object pool cho log cells, tranh Instantiate/Destroy lien tuc
     /// </summary>
-    public sealed class GGLogPool
+    public sealed class LogPool
     {
-        private const int MAX_CELLS = 300;
-        private const int PREWARM_COUNT = 20;
+        private const int MaxCells = 300;
+        private const int PrewarmCount = 20;
 
         private readonly GameObject _prefab;
         private readonly Transform _container;
         private readonly Transform _poolParent;
-        private readonly Stack<GGLogCell> _available = new();
-        private readonly List<GGLogCell> _active = new();
+        private readonly Stack<LogCell> _available = new();
+        private readonly List<LogCell> _active = new();
 
         public int ActiveCount => _active.Count;
-        public IReadOnlyList<GGLogCell> ActiveCells => _active;
+        public IReadOnlyList<LogCell> ActiveCells => _active;
 
-        public GGLogPool(GameObject prefab, Transform container, Transform poolParent)
+        public LogPool(GameObject prefab, Transform container, Transform poolParent)
         {
             _prefab = prefab;
             _container = container;
@@ -31,7 +31,7 @@ namespace GGConsolePackage
 
         public void Prewarm()
         {
-            for (var i = 0; i < PREWARM_COUNT; i++)
+            for (var i = 0; i < PrewarmCount; i++)
             {
                 var cell = CreateCell();
                 cell.ResetCell();
@@ -41,22 +41,14 @@ namespace GGConsolePackage
         }
 
         /// <summary>
-        /// Lay cell tu pool. Neu vuot MAX_CELLS, recycle cell cu nhat.
+        /// Lay cell tu pool. Neu vuot MaxCells, recycle cell cu nhat.
         /// </summary>
-        public GGLogCell Get()
+        public LogCell Get()
         {
-            if (_active.Count >= MAX_CELLS && _active.Count > 0)
+            if (_active.Count >= MaxCells && _active.Count > 0)
                 Recycle(_active[0]);
 
-            GGLogCell cell;
-            if (_available.Count > 0)
-            {
-                cell = _available.Pop();
-            }
-            else
-            {
-                cell = CreateCell();
-            }
+            var cell = _available.Count > 0 ? _available.Pop() : CreateCell();
 
             cell.transform.SetParent(_container, false);
             cell.transform.SetAsLastSibling();
@@ -67,7 +59,7 @@ namespace GGConsolePackage
         /// <summary>
         /// Tra 1 cell ve pool
         /// </summary>
-        public void Recycle(GGLogCell cell)
+        public void Recycle(LogCell cell)
         {
             _active.Remove(cell);
             cell.ResetCell();
@@ -90,12 +82,12 @@ namespace GGConsolePackage
             _active.Clear();
         }
 
-        private GGLogCell CreateCell()
+        private LogCell CreateCell()
         {
             var go = Object.Instantiate(_prefab);
-            var cell = go.GetComponent<GGLogCell>();
+            var cell = go.GetComponent<LogCell>();
             if (cell == null)
-                throw new System.InvalidOperationException("PrefabTextLog missing GGLogCell component");
+                throw new System.InvalidOperationException("PrefabTextLog missing LogCell component");
             return cell;
         }
     }

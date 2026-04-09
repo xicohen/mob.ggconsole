@@ -2,19 +2,19 @@
 
 using UnityEngine;
 
-namespace GGConsolePackage
+namespace Mob404.Console
 {
     /// <summary>
     /// Data model cho 1 dong log
     /// </summary>
-    public sealed class GGLogEntry
+    public sealed class LogEntry
     {
         public string Message { get; }
         public string StackTrace { get; }
         public LogType LogType { get; }
         public int Index { get; }
 
-        public GGLogEntry(string message, string stackTrace, LogType logType, int index)
+        public LogEntry(string message, string stackTrace, LogType logType, int index)
         {
             Message = message;
             StackTrace = stackTrace;
